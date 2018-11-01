@@ -1,0 +1,22 @@
+{
+  "name": "tensorflowjspac",
+  "version": "1.0.0",
+  "description": "Proof of Concept to test learning model shared between server and client using tensorflowjs",
+  "repository": "https://github.com/brolam/tensorflowjsPoc.git",
+  "license": "(MIT OR Apache-2.0)",
+  "scripts": {
+    "client": "cd client && npm start",
+    "server": "nodemon server.js",
+    "start": "concurrently --kill-others-on-fail \"./node_modules/nodemon/bin/nodemon.js server.js\" \"PORT=8081 npm run client\""
+  },
+  "main": "server.js",
+  "dependencies": {
+    "@tensorflow/tfjs": "^0.13.2",
+    "@tensorflow/tfjs-node": "^0.1.18",
+    "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.0",
+    "nodemon": "^1.18.4"
+  }
+}
