@@ -1,8 +1,8 @@
 const training = require("./trainings")
 
 exports.doSequentialTrain = (req, res) => {
-  training.sequentialTrain.doTrain()
-  res.send({ express: 'sequential train was started' });
+  const trainStatus = training.sequentialTrain.doTrain(req.body, this.socketIo)
+  res.send(JSON.stringify(trainStatus));
 }
 
 exports.getSequentialTrain = (req, res) => {

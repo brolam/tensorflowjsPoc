@@ -4,46 +4,50 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import MyLinearProgress from './MyLinearProgress'
 
 const styles = theme => ({
   mainGrid: {
     marginTop: theme.spacing.unit * 3,
+  },
+  button: {
+    margin: theme.spacing.unit,
+    variant: "contained" 
   }
 });
 
 function InputXForm(props) {
-    const { classes } = props 
+    const { classes, onSubmitXY, onSubmitDoTrain } = props 
     return (
     <React.Fragment>
-      <Typography variant="h6" gutterBottom>
-        Input X
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4}>
-          <TextField
-            required
-            id="x"
-            name="x"
-            label="X input"
-            fullWidth
-          />
+      <form onSubmit={onSubmitXY} >
+        <Typography variant="h6" gutterBottom>
+          Input X
+        </Typography>
+        <Grid container spacing={8}>
+          <Grid item xs={12} sm={5}>
+            <TextField required={true} name="x" label="X input" fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={5}>
+            <TextField required={true} name="y" label="Real Y input" fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={2}>
+            <Button className={classes.button} color="primary" type="Submit" >Add</Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={3}>
-          <Button size="small" color="primary">Input X</Button>
+      </form>
+      <form onSubmit={onSubmitDoTrain} >
+        <Typography variant="h6" gutterBottom>
+          Train
+        </Typography>
+        <Grid container spacing={8}>
+          <Grid item xs={12} sm={6}>
+            <TextField required={true} name="epochs" label="Train epochs" fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Button className={classes.button} color="primary" type="Submit" >Train</Button>
+          </Grid>
         </Grid>
-        <Grid item xs={24} sm={5}>
-           <Button size="small" color="primary">Input X and Train</Button>
-        </Grid>
-        <Grid  className={classes.mainGrid} container xs={12} >
-            <Grid item xs={12} >
-                <Typography variant="h6" gutterBottom> Training Process</Typography>
-            </Grid>
-            <Grid item xs={12} >
-              <MyLinearProgress/>
-            </Grid>
-        </Grid>
-      </Grid>
+      </form>
     </React.Fragment>
   );
 }
