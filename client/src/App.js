@@ -10,30 +10,30 @@ import routes from './routes'
 import LinearRegressionPage from './pages/LinearRegressionPage'
 
 const styles = theme => ({
-  
+
 });
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      currentPage: routes.PagesRoutes.APP, 
+    this.state = {
+      currentPage: routes.PagesRoutes.APP,
     };
     routes.setApp(this);
   }
-  
+
   render() {
     return (
-    <React.Fragment>
-      <CssBaseline />
-      <MyAppBar routes={routes} />
-      <main>
-        <About/>
-        {(this.state.currentPage === routes.PagesRoutes.LINEAR_REGRESSION) && <LinearRegressionPage app={this} />}
-        {(this.state.currentPage === routes.PagesRoutes.APP) && <ModelsList routes={routes}/>}
-      </main>
-      <MyFooter/>
-    </React.Fragment>
+      <React.Fragment>
+        <CssBaseline />
+        <MyAppBar routes={routes} />
+        <main>
+          <About />
+          {(this.state.currentPage === routes.PagesRoutes.LINEAR_REGRESSION) && <LinearRegressionPage app={this} />}
+          {(this.state.currentPage === routes.PagesRoutes.APP) && <ModelsList routes={routes} />}
+        </main>
+        <MyFooter />
+      </React.Fragment>
     )
   }
 }

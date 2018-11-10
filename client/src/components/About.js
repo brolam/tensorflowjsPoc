@@ -17,14 +17,14 @@ function About(props) {
     const { classes } = props
     return (
         <div className={classes.heroUnit}>
-          <div className={classes.heroContent}>
-            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-             TensorflowJS exemplos
+            <div className={classes.heroContent}>
+                <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                    TensorflowJS exemplos
             </Typography>
-            <Typography variant="h6" align="center" color="textSecondary" paragraph>
-              Modelos preditivos construidos desenvolvidos em TensorflowJS.
+                <Typography variant="h6" align="center" color="textSecondary" paragraph>
+                    Modelos preditivos construidos desenvolvidos em TensorflowJS.
             </Typography>
-          </div>
+            </div>
         </div>
     )
 }

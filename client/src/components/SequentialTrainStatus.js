@@ -8,22 +8,22 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
   },
-   snackbar: {
+  snackbar: {
     margin: theme.spacing.unit,
   },
 });
 
 function SequentialTrainStatus(props) {
   const { classes, trainStatus } = props;
-  const  anchorOrigin={ vertical: 'bottom', horizontal: 'left'}
+  const anchorOrigin = { vertical: 'bottom', horizontal: 'left' }
   return (
     <Snackbar anchorOrigin={anchorOrigin} open={true}>
-      <SnackbarContent  
+      <SnackbarContent
         className={classes.snackbar}
-        message={`Epochs: ${trainStatus.currentEpoch} / ${trainStatus.epochs} Loss Train ${Number(trainStatus.loss,2)}`}> 
+        message={`Epochs: ${trainStatus.currentEpoch} / ${trainStatus.epochs} Loss Train ${Number(trainStatus.loss, 2)}`}>
       </SnackbarContent>
     </Snackbar>
-    );
+  );
 }
 
 SequentialTrainStatus.propTypes = {

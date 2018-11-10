@@ -11,13 +11,13 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit,
-    variant: "contained" 
+    variant: "contained"
   }
 });
 
 function InputXForm(props) {
-    const { classes, onSubmitXY, onSubmitDoTrain } = props 
-    return (
+  const { classes, onSubmitXY, onSubmitDoTrain } = props
+  return (
     <React.Fragment>
       <form onSubmit={onSubmitXY} >
         <Typography variant="h6" gutterBottom>

@@ -9,18 +9,18 @@ const styles = theme => ({
   },
 });
 
-function MyFooter(props){
-    const { classes } = props  
-    return(
-        <footer className={classes.footer}>
-        <Typography variant="h6" align="center" gutterBottom>
-          Footer
+function MyFooter(props) {
+  const { classes } = props
+  return (
+    <footer className={classes.footer}>
+      <Typography variant="h6" align="center" gutterBottom>
+        Footer
         </Typography>
-        <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-          Something here to give the footer a purpose!
+      <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
+        Something here to give the footer a purpose!
         </Typography>
-      </footer>
-    )
+    </footer>
+  )
 }
 
 export default withStyles(styles)(MyFooter)

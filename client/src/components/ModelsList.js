@@ -48,27 +48,30 @@ function ModelsList(props) {
   const { classes, routes } = props
   return (
     <div className={classNames(classes.layout, classes.cardGrid)}>
-        <Grid container spacing={40}>
-            {cards.map(card => (
-              <Grid item key={card} sm={6} md={4} lg={3}>
-                <Card className={classes.card}>
-                  <CardContent className={classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Regressão linear
+      <Grid container spacing={40}>
+        {cards.map(card => (
+          <Grid item key={card} sm={6} md={4} lg={3}>
+            <Card className={classes.card}>
+              <CardContent className={classes.cardContent}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  Regressão linear
                     </Typography>
-                    <Typography>
-                      Exemplo linear da relação do preço vs. m².
+                <Typography>
+                  Exemplo linear da relação do preço vs. m².
                     </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" color="primary" onClick={ ()=> routes.setPage(routes.PagesRoutes.LINEAR_REGRESSION) }>
-                      View
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
+              </CardContent>
+              <CardActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  onClick={() => routes.setPage(routes.PagesRoutes.LINEAR_REGRESSION)}>
+                  View
+                </Button>
+              </CardActions>
+            </Card>
           </Grid>
+        ))}
+      </Grid>
     </div>
   )
 }

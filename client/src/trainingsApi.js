@@ -1,8 +1,8 @@
-const apiUrl = "https://tensorflowjspoc-brenofabia.c9users.io:8080/api/"
+const apiUrl = "http://localhost:8082/api/"
 
 let trainingsApi = {};
 
-const fetchOption = (method, bodyParam=null) => ({
+const fetchOption = (method, bodyParam = null) => ({
   method,
   headers: {
     'Accept': 'application/json',
@@ -11,10 +11,8 @@ const fetchOption = (method, bodyParam=null) => ({
   body: bodyParam != null ? JSON.stringify(bodyParam) : null
 })
 
-
-const fetch =  window.fetch
-trainingsApi.doSequentialTrain = (trainProps) => 
-  fetch(`${apiUrl}doSequentialTrain`,  fetchOption('POST', trainProps)).then(response => response.json()).then(jsondata => jsondata )
+const fetch = window.fetch
+trainingsApi.doSequentialTrain = (trainProps) =>
+  fetch(`${apiUrl}doSequentialTrain`, fetchOption('POST', trainProps)).then(response => response.json()).then(jsondata => jsondata)
 
 export default trainingsApi
-    

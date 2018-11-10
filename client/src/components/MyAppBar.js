@@ -18,13 +18,13 @@ function MyAppBar(props) {
     const { classes, routes } = props
     return (
         <AppBar position="static" className={classes.appBar}>
-        <Toolbar>
-          <CameraIcon className={classes.icon} onClick={ ()=> routes.setPage(routes.PagesRoutes.APP)} />
-          <Typography variant="h6" color="inherit" noWrap>
-           TensorflowJS POC
+            <Toolbar>
+                <CameraIcon className={classes.icon} onClick={() => routes.setPage(routes.PagesRoutes.APP)} />
+                <Typography variant="h6" color="inherit" noWrap>
+                    TensorflowJS POC
           </Typography>
-        </Toolbar>
-      </AppBar>
+            </Toolbar>
+        </AppBar>
     )
 }
 

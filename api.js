@@ -6,6 +6,6 @@ exports.doSequentialTrain = (req, res) => {
 }
 
 exports.getSequentialTrain = (req, res) => {
-  const traingFile =  training.sequentialTrain.getTrainFile(req.params.train, req.params.file)
+  const traingFile = training.sequentialTrain.getTrainFile(req.params.train, req.params.file)
   res.sendFile(traingFile, { root: '.' });
 }

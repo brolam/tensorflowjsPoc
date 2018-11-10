@@ -26,19 +26,17 @@ const styles = theme => ({
 
 class LinearRegressionPage extends Component {
   loadModel = () => {
-     tf.loadModel('http://tensorflowjspoc-brenofabia.c9users.io/api/getSequentialTrainFile/model-1/model.json').then((model) => {
+    tf.loadModel('http://localhost:8082/api/getSequentialTrainFile/model-1/model.json').then((model) => {
       this.trainedModel = model;
-      console.log(model);
       let sequentialTrainData = this.state.sequentialTrainData;
-      sequentialTrainData.forEach((item) =>{
-        item.yPredic = Number(this.getPredict(item.x), 2);
+      sequentialTrainData.forEach((item) => {
+        item.yPredic = this.getPredict(item.x);
       })
-      this.setState({ sequentialTrainData });
+      this.setSequentialTrainData(sequentialTrainData);
       clearInterval(this.timer);
-      
     });
   }
-  
+
   constructor(props) {
     super(props);
     this.state = {
@@ -53,15 +51,14 @@ class LinearRegressionPage extends Component {
         { x: 7, yReal: 7, yPredic: 7.2 },
       ]
     };
-    const socket = openSocket("http://tensorflowjspoc-brenofabia.c9users.io:8080");
+    const socket = openSocket("http://localhost:8082");
     socket.on('sequentialTrain', (trainStatus) => {
       this.setState({ sequentialTrainStatus: trainStatus });
-      if ( !trainStatus.running) this.timer = setInterval(this.loadModel, 1000);
+      if (!trainStatus.running) this.timer = setInterval(this.loadModel, 1000);
     });
     this.loadModel();
-   
   }
-  
+
   componentDidMount() {
     //this.timer = setInterval(this.uiUpdate, 500);
   }
@@ -69,10 +66,22 @@ class LinearRegressionPage extends Component {
   componentWillUnmount() {
     clearInterval(this.timer);
   }
-  
+
   getPredict(x) {
     const yPredic = this.trainedModel.predict(tf.tensor2d([Number(x)], [1, 1]));
-    return yPredic.dataSync();
+    return parseFloat(yPredic.dataSync()).toFixed(2);
+  }
+
+  setSequentialTrainData(sequentialTrainData) {
+    this.setState({ sequentialTrainData: this.getDiffRealVsPredic(sequentialTrainData) });
+
+  }
+
+  getDiffRealVsPredic(sequentialTrainData) {
+    sequentialTrainData.forEach((item) => {
+      item.yDiff = parseFloat(item.yPredic / item.yReal * 100).toFixed(2);
+    })
+    return sequentialTrainData;
   }
 
   onSubmitXY = (event) => {
@@ -83,7 +92,7 @@ class LinearRegressionPage extends Component {
     const yPredic = this.getPredict(x);
     let sequentialTrainData = this.state.sequentialTrainData;
     sequentialTrainData.push({ x, yReal, yPredic });
-    this.setState({ sequentialTrainData });
+    this.setSequentialTrainData(sequentialTrainData);
   };
 
   onSubmitDoTrain = (event) => {
@@ -100,27 +109,29 @@ class LinearRegressionPage extends Component {
     const { classes } = this.props
     return (
       <div className={classNames(classes.layout)}>
-      <Grid container spacing={8}>
+        <Grid container spacing={8}>
           <Grid item xs={12} sm={4}>
-            <InputXForm onSubmitXY = {this.onSubmitXY} onSubmitDoTrain={this.onSubmitDoTrain} />
+            <InputXForm onSubmitXY={this.onSubmitXY} onSubmitDoTrain={this.onSubmitDoTrain} />
           </Grid>
           <Grid item container direction="column" xs={12} sm={8}>
-           <ResponsiveContainer width="99%" height={420}>
-            <LineChart key={Math.random()} data={this.state.sequentialTrainData} >
-              <XAxis dataKey="x" />
-              <YAxis dataKey="yReal"/>
-              <YAxis dataKey="yPredic" />
-              <CartesianGrid stroke="#ccc" />
-              <Tooltip/>
-              <Legend />
-              <Line type="monotone" dataKey="yPredic" stroke="red" />
-              <Line type="monotone" dataKey="yReal"  stroke="#82ca9d" />
-            </LineChart>
-           </ResponsiveContainer>
+            <ResponsiveContainer width="99%" height={420}>
+              <LineChart key={Math.random()} data={this.state.sequentialTrainData} >
+                <XAxis dataKey="x" />
+                <YAxis dataKey="yReal" />
+                <YAxis dataKey="yPredic" />
+                <YAxis dataKey="yDiff" />
+                <CartesianGrid stroke="#ccc" />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="yDiff" stroke="blue" />
+                <Line type="monotone" dataKey="yPredic" stroke="red" />
+                <Line type="monotone" dataKey="yReal" stroke="#82ca9d" />
+              </LineChart>
+            </ResponsiveContainer>
           </Grid>
-      </Grid>
-      { ( this.state.sequentialTrainStatus.running ) && <SequentialTrainStatus trainStatus = {this.state.sequentialTrainStatus} /> }
-    </div>
+        </Grid>
+        {(this.state.sequentialTrainStatus.running) && <SequentialTrainStatus trainStatus={this.state.sequentialTrainStatus} />}
+      </div>
     );
   }
 }
