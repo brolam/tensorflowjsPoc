@@ -2,7 +2,7 @@ const config = require("../config")
 const tf = require('@tensorflow/tfjs');
 require('@tensorflow/tfjs-node'); // Use '@tensorflow/tfjs-node-gpu' if running with GPU.
 
-exports.doTrain = (trainProps, socketIo) => {
+exports.doTrain = function(trainProps, socketIo){
     // Train a simple model:
     const model = tf.sequential();
     model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
@@ -34,9 +34,18 @@ exports.doTrain = (trainProps, socketIo) => {
                 countEmits++;
             },
             onTrainEnd: async () => {
-                await model.save(`file://${config.trainingsPath()}/model-1`);
-                epochLog.running = false;
-                socketIo.emit('sequentialTrain', epochLog);
+                const setStopTrainig = () =>{
+                    epochLog.running = false;
+                    socketIo.emit('sequentialTrain', epochLog);
+                };
+                model.save(`file://${config.trainingsPath()}/model-1`)
+                .then(() =>{
+                    setStopTrainig();
+                })
+                .catch((reason) => {
+                    console.log(reason);
+                    setStopTrainig();
+                });
             }
         }
     });
