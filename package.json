@@ -6,17 +6,23 @@
   "license": "(MIT OR Apache-2.0)",
   "scripts": {
     "client": "cd client && npm start",
-    "server": "nodemon server.js",
-    "start": "concurrently --kill-others-on-fail \"./node_modules/nodemon/bin/nodemon.js server.js\" \"PORT=8081 npm run client\""
+    "server": "nodemon -L --inspect=0.0.0.0:7000 server.js",
+    "start": "concurrently --kill-others-on-fail \"./node_modules/nodemon/bin/nodemon.js -L --inspect=0.0.0.0:7000 server.js\" \"PORT=8081 npm run client\""
   },
   "main": "server.js",
   "dependencies": {
     "@tensorflow/tfjs-node": "^0.1.20",
+    "@tensorflow/tfjs-node-gpu": "^0.1.21",
     "express": "^4.16.2",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {
     "concurrently": "^3.5.0",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "argparse": "^1.0.10",
+    "clang-format": "~1.2.2"
+  },
+  "nodemonConfig": {
+    "ignore": ["data/*", "Examples/*", "client/*"]
   }
 }
