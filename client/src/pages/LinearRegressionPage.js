@@ -9,7 +9,7 @@ import SequentialTrainStatus from '../components/SequentialTrainStatus'
 import trainingsApi from '../trainingsApi'
 import * as tf from '@tensorflow/tfjs';
 import openSocket from 'socket.io-client';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 const styles = theme => ({
   layout: {
     width: 'auto',
@@ -21,6 +21,14 @@ const styles = theme => ({
       marginRight: 'auto',
     },
     padding: `${theme.spacing.unit}px 0`,
+  },
+  progressRoot: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  progress: {
+    margin: theme.spacing.unit * 8,
   }
 });
 
@@ -111,7 +119,15 @@ class LinearRegressionPage extends Component {
       <div className={classNames(classes.layout)}>
         <Grid container spacing={8}>
           <Grid item xs={12} sm={4}>
-            <InputXForm onSubmitXY={this.onSubmitXY} onSubmitDoTrain={this.onSubmitDoTrain} />
+
+            {
+              (this.state.sequentialTrainStatus.running)
+                ? <div className={classes.progressRoot}>
+                  <CircularProgress className={classes.progress} />
+                </div>
+                : <InputXForm onSubmitXY={this.onSubmitXY} onSubmitDoTrain={this.onSubmitDoTrain} />
+            }
+
           </Grid>
           <Grid item container direction="column" xs={12} sm={8}>
             <ResponsiveContainer width="99%" height={420}>
