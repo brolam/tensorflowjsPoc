@@ -15,4 +15,12 @@ const fetch = window.fetch
 trainingsApi.doSequentialTrain = (trainProps) =>
   fetch(`${apiUrl}doSequentialTrain`, fetchOption('POST', trainProps)).then(response => response.json()).then(jsondata => jsondata)
 
+trainingsApi.getPolynomialTrainExamples = () => fetch(
+  `${apiUrl}getPolynomialTrainExamples`, fetchOption('GET')
+).then(response => response.json()
+).then(jsondata => jsondata)
+
+trainingsApi.doPolynomialTrain = (trainProps) =>
+  fetch(`${apiUrl}doPolynomialTrain`, fetchOption('POST', trainProps)).then(response => response.json()).then(jsondata => jsondata)
+
 export default trainingsApi

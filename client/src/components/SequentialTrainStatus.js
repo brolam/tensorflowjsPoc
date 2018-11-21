@@ -20,7 +20,7 @@ function SequentialTrainStatus(props) {
     <Snackbar anchorOrigin={anchorOrigin} open={true}>
       <SnackbarContent
         className={classes.snackbar}
-        message={`Epochs: ${trainStatus.currentEpoch} / ${trainStatus.epochs} Loss Train ${Number(trainStatus.loss, 2)}`}>
+        message={`Epochs: ${trainStatus.currentEpoch} / ${trainStatus.epochs} Loss Train ${parseFloat(trainStatus.loss).toFixed(4)}`}>
       </SnackbarContent>
     </Snackbar>
   );

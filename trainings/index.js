@@ -1,3 +1,5 @@
-const sequentialTrain = require("./sequentialTrain.js")
+const sequentialTrain = require("./sequentialTrain.js");
+const polynomialTrain = require("./polynomialTrain.js");
 
-exports.sequentialTrain = sequentialTrain
+exports.sequentialTrain = sequentialTrain;
+exports.polynomialTrain = polynomialTrain;

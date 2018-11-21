@@ -20,11 +20,11 @@ exports.doTrain = function(trainProps, socketIo){
     const ys = tf.tensor2d(y, [y.length, 1]);
     let epochLog = { epochs: 0, currentEpoch: 0, loss: 0, running: true };
     let countEmits = 0;
-
     model.fit(xs, ys, {
         epochs: trainProps.epochs,
         callbacks: {
             onEpochEnd: async (epoch, log) => {
+                process.stdout.write('\033[0G');
                 //console.log(`Epoch ${epoch}: loss = ${log.loss}`);
                 if (countEmits == 100) {
                     epochLog = { epochs: trainProps.epochs, currentEpoch: epoch, loss: log.loss, running: true };

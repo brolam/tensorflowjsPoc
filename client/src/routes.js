@@ -1,8 +1,8 @@
 var Routes = {
     PagesRoutes: {
         APP: 'APP',
-        LINEAR_REGRESSION: 'LINEAR_REGRESSION'
-        
+        LINEAR_REGRESSION: 'LINEAR_REGRESSION',
+        POLYNOMIAL_REGRESSION: 'POLYNOMIAL_REGRESSION'
     }
 }
 

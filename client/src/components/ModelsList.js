@@ -8,8 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
-const cards = [1];
-
 const styles = theme => ({
   layout: {
     width: 'auto',
@@ -42,10 +40,12 @@ const styles = theme => ({
   }
 });
 
-
-
 function ModelsList(props) {
   const { classes, routes } = props
+  const cards = [
+    { title: "Regressão Linear", description: "Exemplo de treinamento linear.", page: routes.PagesRoutes.LINEAR_REGRESSION },
+    { title: "Regressão Polynomial", description: "Exemplo de treinamento polynomial", page: routes.PagesRoutes.POLYNOMIAL_REGRESSION },
+  ];
   return (
     <div className={classNames(classes.layout, classes.cardGrid)}>
       <Grid container spacing={40}>
@@ -54,17 +54,17 @@ function ModelsList(props) {
             <Card className={classes.card}>
               <CardContent className={classes.cardContent}>
                 <Typography gutterBottom variant="h5" component="h2">
-                  Regressão linear
-                    </Typography>
+                  {card.title}
+                </Typography>
                 <Typography>
-                  Exemplo linear da relação do preço vs. m².
-                    </Typography>
+                  {card.description}
+                </Typography>
               </CardContent>
               <CardActions>
                 <Button
                   size="small"
                   color="primary"
-                  onClick={() => routes.setPage(routes.PagesRoutes.LINEAR_REGRESSION)}>
+                  onClick={() => routes.setPage(card.page)}>
                   View
                 </Button>
               </CardActions>

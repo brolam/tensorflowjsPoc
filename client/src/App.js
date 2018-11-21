@@ -8,6 +8,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { withStyles } from '@material-ui/core/styles';
 import routes from './routes'
 import LinearRegressionPage from './pages/LinearRegressionPage'
+import PolynomialRegressionPage from './pages/PolynomialRegressionPage'
 
 const styles = theme => ({
 
@@ -30,6 +31,7 @@ class App extends Component {
         <main>
           <About />
           {(this.state.currentPage === routes.PagesRoutes.LINEAR_REGRESSION) && <LinearRegressionPage app={this} />}
+          {(this.state.currentPage === routes.PagesRoutes.POLYNOMIAL_REGRESSION) && <PolynomialRegressionPage app={this} />}
           {(this.state.currentPage === routes.PagesRoutes.APP) && <ModelsList routes={routes} />}
         </main>
         <MyFooter />
