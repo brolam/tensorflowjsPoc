@@ -28,6 +28,7 @@ async function run(epochs, batchSize, modelSavePath) {
 
   const {images: trainImages, labels: trainLabels} = data.getTrainData();
   model.summary();
+  console.log(`Amount Images: ${trainImages.size}`);
 
   let epochBeginTime;
   let millisPerStep;
@@ -51,7 +52,7 @@ async function run(epochs, batchSize, modelSavePath) {
       `Accuracy = ${evalOutput[1].dataSync()[0].toFixed(3)}`);
 
   if (modelSavePath != null) {
-    await model.save(`file://${modelSavePath}`);
+    await model.save(`file://data/${modelSavePath}`);
     console.log(`Saved model to path: ${modelSavePath}`);
   }
 }

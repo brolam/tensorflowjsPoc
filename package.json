@@ -6,8 +6,8 @@
   "license": "(MIT OR Apache-2.0)",
   "scripts": {
     "client": "cd client && npm start",
-    "server": "nodemon -L --inspect=0.0.0.0:7000 server.js",
-    "start": "concurrently --kill-others-on-fail \"./node_modules/nodemon/bin/nodemon.js -L --inspect=0.0.0.0:7000 server.js\" \"PORT=8081 npm run client\""
+    "start": "nodemon -L --inspect=0.0.0.0:7000 server.js",
+    "server": "concurrently --kill-others-on-fail \"./node_modules/nodemon/bin/nodemon.js -L --inspect=0.0.0.0:7000 server.js\" \"PORT=8081 npm run client\""
   },
   "main": "server.js",
   "dependencies": {

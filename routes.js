@@ -17,4 +17,5 @@ exports.setUp = (app, express, socketIo) => {
     app.get('/api/getSequentialTrainFile/:train/:file', api.getSequentialTrain);
     app.get('/api/getPolynomialTrainExamples', api.getPolynomialTrainExamples);
     app.post('/api/doPolynomialTrain', api.doPolynomialTrain);
+    app.get('/api/getCnnHandWrittenExamples/:amount', api.getCnnHandWrittenExamples);
 }

@@ -23,15 +23,16 @@ const fs = require('fs');
 const https = require('https');
 const util = require('util');
 const zlib = require('zlib');
+const config = require("../config");
 
 const readFile = util.promisify(fs.readFile);
 
 // MNIST data constants:
 const BASE_URL = 'https://storage.googleapis.com/cvdf-datasets/mnist/';
-const TRAIN_IMAGES_FILE = './data/train-images-idx3-ubyte';
-const TRAIN_LABELS_FILE = './data/train-labels-idx1-ubyte';
-const TEST_IMAGES_FILE = './data/t10k-images-idx3-ubyte';
-const TEST_LABELS_FILE = './data/t10k-labels-idx1-ubyte';
+const TRAIN_IMAGES_FILE = `train-images-idx3-ubyte`;
+const TRAIN_LABELS_FILE = `train-labels-idx1-ubyte`;
+const TEST_IMAGES_FILE = `t10k-images-idx3-ubyte`;
+const TEST_LABELS_FILE = `t10k-labels-idx1-ubyte`;
 const IMAGE_HEADER_MAGIC_NUM = 2051;
 const IMAGE_HEADER_BYTES = 16;
 const IMAGE_HEIGHT = 28;
@@ -166,6 +167,7 @@ class MnistDataset {
             `the number of labels (${this.dataset[labelsIndex].length})`);
 
     // Only create one big array to hold batch of images.
+    /*
     const imagesShape = [size, IMAGE_HEIGHT, IMAGE_WIDTH, 1];
     const images = new Float32Array(tf.util.sizeFromShape(imagesShape));
     const labels = new Int32Array(tf.util.sizeFromShape([size, 1]));
@@ -178,11 +180,15 @@ class MnistDataset {
       imageOffset += IMAGE_FLAT_SIZE;
       labelOffset += 1;
     }
+    */
 
+    /*
     return {
       images: tf.tensor4d(images, imagesShape),
       labels: tf.oneHot(tf.tensor1d(labels, 'int32'), LABEL_FLAT_SIZE).toFloat()
     };
+    */
+    return {images: this.dataset[imagesIndex], labels : this.dataset[labelsIndex] };
   }
 }
 

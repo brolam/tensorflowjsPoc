@@ -23,4 +23,8 @@ trainingsApi.getPolynomialTrainExamples = () => fetch(
 trainingsApi.doPolynomialTrain = (trainProps) =>
   fetch(`${apiUrl}doPolynomialTrain`, fetchOption('POST', trainProps)).then(response => response.json()).then(jsondata => jsondata)
 
+trainingsApi.getCnnHandWrittenExamples = (amount) =>
+  fetch(`${apiUrl}getCnnHandWrittenExamples/${amount}`, fetchOption('GET')).then(response => response.json()).then(jsondata => jsondata)
+
+
 export default trainingsApi

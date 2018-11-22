@@ -19,3 +19,8 @@ exports.doPolynomialTrain = (req, res) => {
   const trainStatus = training.polynomialTrain.doTrain(req.body, this.socketIo)
   res.send(JSON.stringify(trainStatus));
 }
+
+exports.getCnnHandWrittenExamples = async function(req, res) {
+  const examples = await training.cnnHandWrittenTrain.getExamplesTrain(req.params.amount);
+  res.send(JSON.stringify(examples));
+}

@@ -41,11 +41,7 @@ const styles = theme => ({
 });
 
 function ModelsList(props) {
-  const { classes, routes } = props
-  const cards = [
-    { title: "Regressão Linear", description: "Exemplo de treinamento linear.", page: routes.PagesRoutes.LINEAR_REGRESSION },
-    { title: "Regressão Polynomial", description: "Exemplo de treinamento polynomial", page: routes.PagesRoutes.POLYNOMIAL_REGRESSION },
-  ];
+  const { classes, routes, cards } = props
   return (
     <div className={classNames(classes.layout, classes.cardGrid)}>
       <Grid container spacing={40}>
