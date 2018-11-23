@@ -23,8 +23,13 @@ trainingsApi.getPolynomialTrainExamples = () => fetch(
 trainingsApi.doPolynomialTrain = (trainProps) =>
   fetch(`${apiUrl}doPolynomialTrain`, fetchOption('POST', trainProps)).then(response => response.json()).then(jsondata => jsondata)
 
-trainingsApi.getCnnHandWrittenExamples = (amount) =>
-  fetch(`${apiUrl}getCnnHandWrittenExamples/${amount}`, fetchOption('GET')).then(response => response.json()).then(jsondata => jsondata)
+trainingsApi.getCnnHandWrittenTrainExamples = (amount) =>
+  fetch(`${apiUrl}getCnnHandWrittenTrainExamples/${amount}`, fetchOption('GET')).then(response => response.json()).then(jsondata => jsondata)
 
+trainingsApi.doCnnHandWrittenTrain = (trainProps) =>
+  fetch(`${apiUrl}doCnnHandWrittenTrain`, fetchOption('POST', trainProps)).then(response => response.json()).then(jsondata => jsondata)
+
+trainingsApi.getCnnHandWrittenTrainLabel = (image) =>
+  fetch(`${apiUrl}getCnnHandWrittenTrainLabel`, fetchOption('POST', image)).then(response => response.json()).then(jsondata => jsondata)
 
 export default trainingsApi

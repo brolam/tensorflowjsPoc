@@ -14,6 +14,10 @@ import * as tf from '@tensorflow/tfjs';
 import openSocket from 'socket.io-client';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+const IMAGE_HEIGHT = 28;
+const IMAGE_WIDTH = 28;
+const IMATE_AMOUNT = 50;
+
 const styles = theme => ({
   layout: {
     width: 'auto',
@@ -63,29 +67,33 @@ const styles = theme => ({
 
 class CnnHandWrittenPaga extends Component {
   loadModel = () => {
-    tf.loadModel('http://localhost:8082/api/getSequentialTrainFile/model-2/model.json').then((model) => {
+    tf.loadModel('http://localhost:8082/api/getSequentialTrainFile/model-3/model.json').then(model => {
       this.trainedModel = model;
-      console.log(model)
-      let polynomialTrainData = this.state.polynomialTrainData;
-      polynomialTrainData.forEach((item) => {
-        item.yPredic = this.getPredict(item.x);
+      const { images, labels } = this.state.dataTraining;
+      let labelsPredicted = [];
+      images.forEach((image, index) => {
+        const predicted = this.getPredict(image);
+        labelsPredicted.push({label: predicted.argMax(1).dataSync(), predicted: predicted.dataSync()});
+        console.log(`label:${labels[index][0]} pValue:${predicted.argMax(1).dataSync()} predicted:${predicted.dataSync()}`);
       })
-      this.setpolynomialTrainData(polynomialTrainData);
+      this.setDataTraining({ images, labels, labelsPredicted });
       clearInterval(this.timer);
     });
   }
 
   loadExamples = () => {
-    trainingsApi.getCnnHandWrittenExamples(100)
-      .then(examples => this.setState({ dataTraining: examples }));
-    //this.loadModel();
+    trainingsApi.getCnnHandWrittenTrainExamples(IMATE_AMOUNT)
+      .then(examples => {
+        this.setState({ dataTraining: examples })
+        this.loadModel();
+      });
   }
 
   constructor(props) {
     super(props);
     this.state = {
       sequentialTrainStatus: { epochs: 0, currentEpoch: 0, loss: 0, running: false },
-      dataTraining: { labels: [], images: [] }
+      dataTraining: { images: [], labels: [] }
     };
     const socket = openSocket("http://localhost:8082");
     socket.on('sequentialTrain', (trainStatus) => {
@@ -96,10 +104,8 @@ class CnnHandWrittenPaga extends Component {
   }
 
   componentDidUpdate() {
-    console.log(this.state.dataTraining.images);
     this.state.dataTraining.images.forEach((image, index) => {
       this.drawImage(image, `canvas${index}`);
-      console.log(index);
     })
   }
 
@@ -107,21 +113,29 @@ class CnnHandWrittenPaga extends Component {
     clearInterval(this.timer);
   }
 
-  getPredict(x) {
-    const yPredic = this.trainedModel.predict(tf.tensor2d([Number(x)], [1, 1]));
-    return parseFloat(yPredic.dataSync()).toFixed(2);
+  getPredict(image) {
+    let imageArray = [];
+    for (let i = 0; i < (IMAGE_HEIGHT * IMAGE_WIDTH); ++i) {
+      imageArray.push(image[i]);
+    }
+    let imagesShape = [1, IMAGE_HEIGHT, IMAGE_WIDTH, 1];
+    let imagesXs = new Float32Array(tf.util.sizeFromShape(imagesShape));
+    imagesXs.set(imageArray, 0);
+    return this.trainedModel.predict(tf.tensor4d(imagesXs, imagesShape));
   }
 
-  setpolynomialTrainData(polynomialTrainData) {
-    this.setState({ polynomialTrainData: this.getDiffRealVsPredic(polynomialTrainData) });
-
+  getPredictLabel(labelsPredicted, index){
+    if (( labelsPredicted == null ) || ( labelsPredicted.length < index)) return -1;
+    return labelsPredicted[index].label;
   }
 
-  getDiffRealVsPredic(polynomialTrainData) {
-    polynomialTrainData.forEach((item) => {
-      item.yDiff = parseFloat(item.yPredic / item.yReal * 100).toFixed(2);
-    })
-    return polynomialTrainData;
+  getPredictStatuColor(label, labelsPredicted, index){
+    if (( labelsPredicted == null ) || ( labelsPredicted.length < index)) return "yellow";
+    return parseInt(labelsPredicted[index].label) ===  parseInt(label)? "primary":"secondary";
+  }
+
+  setDataTraining(dataTraining) {
+    this.setState({ dataTraining });
   }
 
   drawImage(image, canvasId) {
@@ -144,6 +158,7 @@ class CnnHandWrittenPaga extends Component {
 
   onSubmitXY = (event) => {
     event.preventDefault();
+    /*
     const formData = new FormData(event.target);
     const x = formData.get('x');
     const yReal = formData.get('y');
@@ -151,28 +166,27 @@ class CnnHandWrittenPaga extends Component {
     let polynomialTrainData = this.state.polynomialTrainData;
     polynomialTrainData.push({ x, yReal, yPredic });
     this.setpolynomialTrainData(polynomialTrainData);
+    */
   };
 
   onSubmitDoTrain = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
+    //const {images, labels} = this.state.dataTraining;
     const trainProps = {
       epochs: formData.get('epochs'),
-      numNodes: 20,
-      data: this.state.polynomialTrainData,
+      data: { amountImages: IMATE_AMOUNT },
     };
-    trainingsApi.doPolynomialTrain(trainProps).then((res) => { this.setState({ sequentialTrainStatus: res }); });
+    trainingsApi.doCnnHandWrittenTrain(trainProps).then((res) => { this.setState({ sequentialTrainStatus: res }); });
   };
 
   render() {
     const { classes } = this.props;
-    const dataTraining = this.state.dataTraining;
-    console.log(dataTraining);
+    const {labels, labelsPredicted } = this.state.dataTraining;
     return (
       <div className={classNames(classes.layout)}>
         <Grid container spacing={8}>
           <Grid item xs={12} sm={4}>
-
             {
               (this.state.sequentialTrainStatus.running)
                 ? <div className={classes.progressRoot}>
@@ -180,11 +194,10 @@ class CnnHandWrittenPaga extends Component {
                 </div>
                 : <InputXForm onSubmitXY={this.onSubmitXY} onSubmitDoTrain={this.onSubmitDoTrain} />
             }
-
           </Grid>
           <Grid item container direction="column" xs={12} sm={8}>
             <Grid container spacing={8}>
-              {dataTraining.labels.map((label, index) => (
+              {labels.map((label, index) => (
                 <Grid item key={index} sm={1} md={1} lg={1}>
                   <Card className={classes.card}>
                     <CardContent className={classes.cardContent}>
@@ -193,7 +206,7 @@ class CnnHandWrittenPaga extends Component {
                       </Typography>
 
                       <div className={classes.cardContentMida} >
-                        <Badge className={classes.marginBadge} badgeContent={label[0]} color="primary">
+                        <Badge className={classes.marginBadge} badgeContent={this.getPredictLabel(labelsPredicted, index)} color={this.getPredictStatuColor(label[0], labelsPredicted, index)}>
                           <canvas id={`canvas${index}`} className={classes.canvasImage} />
                         </Badge>
                       </div>

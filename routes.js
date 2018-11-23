@@ -10,12 +10,14 @@ exports.setUp = (app, express, socketIo) => {
         res.header('Access-Control-Allow-Credentials', 'true');
         next()
     });
-    app.use(bodyParser.json()); // support json encoded bodies
-    app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+    app.use(bodyParser.json({limit: '2000mb'})); // support json encoded bodies
+    app.use(bodyParser.urlencoded({ extended: true, limit: '2000mb' })); // support encoded bodies
     api.socketIo = socketIo;
     app.post('/api/doSequentialTrain', api.doSequentialTrain);
     app.get('/api/getSequentialTrainFile/:train/:file', api.getSequentialTrain);
     app.get('/api/getPolynomialTrainExamples', api.getPolynomialTrainExamples);
     app.post('/api/doPolynomialTrain', api.doPolynomialTrain);
-    app.get('/api/getCnnHandWrittenExamples/:amount', api.getCnnHandWrittenExamples);
+    app.get('/api/getCnnHandWrittenTrainExamples/:amount', api.getCnnHandWrittenTrainExamples);
+    app.post('/api/doCnnHandWrittenTrain', api.doCnnHandWrittenTrain);
+    app.post('/api/getCnnHandWrittenTrainLabel/', api.getCnnHandWrittenTrainLabel);
 }

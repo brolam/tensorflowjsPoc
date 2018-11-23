@@ -28,10 +28,10 @@ const readFile = util.promisify(fs.readFile);
 
 // MNIST data constants:
 const BASE_URL = 'https://storage.googleapis.com/cvdf-datasets/mnist/';
-const TRAIN_IMAGES_FILE = './data/train-images-idx3-ubyte';
-const TRAIN_LABELS_FILE = './data/train-labels-idx1-ubyte';
-const TEST_IMAGES_FILE = './data/t10k-images-idx3-ubyte';
-const TEST_LABELS_FILE = './data/t10k-labels-idx1-ubyte';
+const TRAIN_IMAGES_FILE = 'train-images-idx3-ubyte';
+const TRAIN_LABELS_FILE = 'train-labels-idx1-ubyte';
+const TEST_IMAGES_FILE = 't10k-images-idx3-ubyte';
+const TEST_LABELS_FILE = 't10k-labels-idx1-ubyte';
 const IMAGE_HEADER_MAGIC_NUM = 2051;
 const IMAGE_HEADER_BYTES = 16;
 const IMAGE_HEIGHT = 28;
@@ -181,7 +181,9 @@ class MnistDataset {
 
     return {
       images: tf.tensor4d(images, imagesShape),
-      labels: tf.oneHot(tf.tensor1d(labels, 'int32'), LABEL_FLAT_SIZE).toFloat()
+      labels: tf.oneHot(tf.tensor1d(labels, 'int32'), LABEL_FLAT_SIZE).toFloat(),
+      imagesRoot: this.dataset[imagesIndex],
+      labelsRoot: this.dataset[labelsIndex],
     };
   }
 }

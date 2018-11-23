@@ -20,7 +20,19 @@ exports.doPolynomialTrain = (req, res) => {
   res.send(JSON.stringify(trainStatus));
 }
 
-exports.getCnnHandWrittenExamples = async function(req, res) {
+exports.getCnnHandWrittenTrainExamples = async function(req, res) {
   const examples = await training.cnnHandWrittenTrain.getExamplesTrain(req.params.amount);
   res.send(JSON.stringify(examples));
 }
+
+exports.getCnnHandWrittenTrainLabel = async function(req, res) {
+  const label = await training.cnnHandWrittenTrain.getLabelTrain(req.body);
+  res.send(JSON.stringify(label));
+}
+
+exports.doCnnHandWrittenTrain = (req, res) => {
+  console.log(req.body);
+  const trainStatus = training.cnnHandWrittenTrain.doTrain(req.body, this.socketIo)
+  res.send(JSON.stringify(trainStatus));
+}
+
