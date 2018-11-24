@@ -16,7 +16,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 const IMAGE_HEIGHT = 28;
 const IMAGE_WIDTH = 28;
-const IMATE_AMOUNT = 50;
+const IMATE_AMOUNT = 1000;
 
 const styles = theme => ({
   layout: {
