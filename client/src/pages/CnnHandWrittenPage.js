@@ -7,16 +7,16 @@ import Badge from '@material-ui/core/Badge';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import InputXForm from '../components/InputXForm'
+import InputExamples from '../components/InputExamples'
 import SequentialTrainStatus from '../components/SequentialTrainStatus'
 import trainingsApi from '../trainingsApi'
 import * as tf from '@tensorflow/tfjs';
 import openSocket from 'socket.io-client';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import TablePagination from '@material-ui/core/TablePagination';
 
 const IMAGE_HEIGHT = 28;
 const IMAGE_WIDTH = 28;
-const IMATE_AMOUNT = 1000;
 
 const styles = theme => ({
   layout: {
@@ -66,6 +66,7 @@ const styles = theme => ({
 });
 
 class CnnHandWrittenPaga extends Component {
+  
   loadModel = () => {
     tf.loadModel('http://localhost:8082/api/getSequentialTrainFile/model-3/model.json').then(model => {
       this.trainedModel = model;
@@ -73,7 +74,7 @@ class CnnHandWrittenPaga extends Component {
       let labelsPredicted = [];
       images.forEach((image, index) => {
         const predicted = this.getPredict(image);
-        labelsPredicted.push({label: predicted.argMax(1).dataSync(), predicted: predicted.dataSync()});
+        labelsPredicted.push({ label: predicted.argMax(1).dataSync(), predicted: predicted.dataSync() });
         console.log(`label:${labels[index][0]} pValue:${predicted.argMax(1).dataSync()} predicted:${predicted.dataSync()}`);
       })
       this.setDataTraining({ images, labels, labelsPredicted });
@@ -82,7 +83,7 @@ class CnnHandWrittenPaga extends Component {
   }
 
   loadExamples = () => {
-    trainingsApi.getCnnHandWrittenTrainExamples(IMATE_AMOUNT)
+    trainingsApi.getCnnHandWrittenTrainExamples(this.state.amountImages)
       .then(examples => {
         this.setState({ dataTraining: examples })
         this.loadModel();
@@ -93,7 +94,10 @@ class CnnHandWrittenPaga extends Component {
     super(props);
     this.state = {
       sequentialTrainStatus: { epochs: 0, currentEpoch: 0, loss: 0, running: false },
-      dataTraining: { images: [], labels: [] }
+      amountImages: 50,
+      dataTraining: { images: [], labels: [] },
+      page: 0,
+      rowsPerPage: 25
     };
     const socket = openSocket("http://localhost:8082");
     socket.on('sequentialTrain', (trainStatus) => {
@@ -104,7 +108,8 @@ class CnnHandWrittenPaga extends Component {
   }
 
   componentDidUpdate() {
-    this.state.dataTraining.images.forEach((image, index) => {
+    const { images } = this.getDataTrainingCurrenPage();
+    images.forEach((image, index) => {
       this.drawImage(image, `canvas${index}`);
     })
   }
@@ -124,14 +129,25 @@ class CnnHandWrittenPaga extends Component {
     return this.trainedModel.predict(tf.tensor4d(imagesXs, imagesShape));
   }
 
-  getPredictLabel(labelsPredicted, index){
-    if (( labelsPredicted == null ) || ( labelsPredicted.length < index)) return -1;
+  getDataTrainingCurrenPage(){
+    const { rowsPerPage, page } = this.state;
+    const { images, labels, labelsPredicted } = this.state.dataTraining;
+    const [ rowInit, rowEnd ] = [page * rowsPerPage, page * rowsPerPage + rowsPerPage];
+    return {
+      images: images.slice(rowInit, rowEnd),
+      labels: labels.slice(rowInit, rowEnd),
+      labelsPredicted: labelsPredicted != null?labelsPredicted.slice(rowInit, rowEnd): null,
+     }
+  }
+
+  getPredictLabel(labelsPredicted, index) {
+    if ((labelsPredicted == null) || (labelsPredicted.length < index)) return -1;
     return labelsPredicted[index].label;
   }
 
-  getPredictStatuColor(label, labelsPredicted, index){
-    if (( labelsPredicted == null ) || ( labelsPredicted.length < index)) return "yellow";
-    return parseInt(labelsPredicted[index].label) ===  parseInt(label)? "primary":"secondary";
+  getPredictStatuColor(label, labelsPredicted, index) {
+    if ((labelsPredicted == null) || (labelsPredicted.length < index)) return "yellow";
+    return parseInt(labelsPredicted[index].label) === parseInt(label) ? "primary" : "secondary";
   }
 
   setDataTraining(dataTraining) {
@@ -172,17 +188,27 @@ class CnnHandWrittenPaga extends Component {
   onSubmitDoTrain = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    //const {images, labels} = this.state.dataTraining;
+    const {amountImages} = this.state;
     const trainProps = {
       epochs: formData.get('epochs'),
-      data: { amountImages: IMATE_AMOUNT },
+      data: { amountImages },
     };
     trainingsApi.doCnnHandWrittenTrain(trainProps).then((res) => { this.setState({ sequentialTrainStatus: res }); });
   };
 
+  handleChangePage = (event, page) => {
+    this.setState({ page });
+  };
+
+  handleChangeRowsPerPage = event => {
+    this.setState({ rowsPerPage: event.target.value });
+  };
+
   render() {
     const { classes } = this.props;
-    const {labels, labelsPredicted } = this.state.dataTraining;
+    const { rowsPerPage, page } = this.state;
+    const { labels, labelsPredicted } = this.getDataTrainingCurrenPage();
+    const amountImages = this.state.dataTraining.labels.length;
     return (
       <div className={classNames(classes.layout)}>
         <Grid container spacing={8}>
@@ -192,10 +218,27 @@ class CnnHandWrittenPaga extends Component {
                 ? <div className={classes.progressRoot}>
                   <CircularProgress className={classes.progress} />
                 </div>
-                : <InputXForm onSubmitXY={this.onSubmitXY} onSubmitDoTrain={this.onSubmitDoTrain} />
+                : <InputExamples onSubmitXY={this.onSubmitXY} onSubmitDoTrain={this.onSubmitDoTrain} />
             }
           </Grid>
           <Grid item container direction="column" xs={12} sm={8}>
+            <Grid container>
+              <TablePagination
+                rowsPerPageOptions={[25, 50, 100]}
+                component="div"
+                count={amountImages}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                backIconButtonProps={{
+                  'aria-label': 'Previous Page',
+                }}
+                nextIconButtonProps={{
+                  'aria-label': 'Next Page',
+                }}
+                onChangePage={this.handleChangePage}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              />
+            </Grid>
             <Grid container spacing={8}>
               {labels.map((label, index) => (
                 <Grid item key={index} sm={1} md={1} lg={1}>
@@ -204,7 +247,6 @@ class CnnHandWrittenPaga extends Component {
                       <Typography gutterBottom variant="h5" component="h2">
                         {label[0]}
                       </Typography>
-
                       <div className={classes.cardContentMida} >
                         <Badge className={classes.marginBadge} badgeContent={this.getPredictLabel(labelsPredicted, index)} color={this.getPredictStatuColor(label[0], labelsPredicted, index)}>
                           <canvas id={`canvas${index}`} className={classes.canvasImage} />
