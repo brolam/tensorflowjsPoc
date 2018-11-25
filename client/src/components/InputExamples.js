@@ -16,32 +16,32 @@ const styles = theme => ({
 });
 
 function InputExamples(props) {
-  const { classes, onSubmitXY, onSubmitDoTrain } = props
+  const { classes, onSubmitAmountTraining, defaultAmountTraining, onSubmitDoTrain } = props
   return (
     <React.Fragment>
-      <form onSubmit={onSubmitXY} >
+      <form onSubmit={onSubmitAmountTraining} >
         <Typography variant="h6" gutterBottom>
-          Training
+          Examples:
         </Typography>
         <Grid container spacing={8}>
           <Grid item xs={12} sm={5}>
-            <TextField required={true} name="amount" label="Amount of training" fullWidth />
+            <TextField required={true} name="amountTraining" label="Amount of training" fullWidth defaultValue={defaultAmountTraining} />
           </Grid>
           <Grid item xs={12} sm={2}>
-            <Button className={classes.button} color="primary" type="Submit" >Add</Button>
+            <Button className={classes.button} color="primary" type="Submit" >GET</Button>
           </Grid>
         </Grid>
       </form>
       <form onSubmit={onSubmitDoTrain} >
         <Typography variant="h6" gutterBottom>
-          Train
+          Training:
         </Typography>
         <Grid container spacing={8}>
           <Grid item xs={12} sm={6}>
-            <TextField required={true} name="epochs" label="Train epochs" fullWidth />
+            <TextField required={true} name="epochs" label="Amount epochs" fullWidth />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Button className={classes.button} color="primary" type="Submit" >Train</Button>
+            <Button className={classes.button} color="primary" type="Submit" >DO</Button>
           </Grid>
         </Grid>
       </form>

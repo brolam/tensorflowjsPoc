@@ -66,27 +66,31 @@ const styles = theme => ({
 });
 
 class CnnHandWrittenPaga extends Component {
-  
-  loadModel = () => {
-    tf.loadModel('http://localhost:8082/api/getSequentialTrainFile/model-3/model.json').then(model => {
-      this.trainedModel = model;
-      const { images, labels } = this.state.dataTraining;
-      let labelsPredicted = [];
-      images.forEach((image, index) => {
-        const predicted = this.getPredict(image);
-        labelsPredicted.push({ label: predicted.argMax(1).dataSync(), predicted: predicted.dataSync() });
-        console.log(`label:${labels[index][0]} pValue:${predicted.argMax(1).dataSync()} predicted:${predicted.dataSync()}`);
-      })
-      this.setDataTraining({ images, labels, labelsPredicted });
-      clearInterval(this.timer);
-    });
+
+  loadModel = async () => {
+    this.trainedModel = await tf.loadModel('http://localhost:8082/api/getSequentialTrainFile/model-3/model.json');
+    const { images, labels } = this.state.dataTraining;
+    let labelsPredicted = [];
+    images.forEach((image, index) => {
+      const predicted = this.getPredict(image);
+      const predictedLabel = predicted.argMax(1).dataSync();
+      labelsPredicted.push({ label: predictedLabel, predicted: predicted.dataSync() });
+      console.log(`label:${labels[index][0]} pValue:${predicted.argMax(1).dataSync()} predicted:${predicted.dataSync()}`);
+    })
+    this.setDataTraining({ images, labels, labelsPredicted });
+    clearInterval(this.timer);
   }
 
   loadExamples = () => {
-    trainingsApi.getCnnHandWrittenTrainExamples(this.state.amountImages)
+    this.setState({ loadRunning: true });
+    trainingsApi.getCnnHandWrittenTrainExamples(this.state.amountTraining)
       .then(examples => {
         this.setState({ dataTraining: examples })
         this.loadModel();
+        this.setState({ loadRunning: false });
+      }).catch(reason => {
+        this.setState({ loadRunning: false });
+        console.log(reason);
       });
   }
 
@@ -94,7 +98,8 @@ class CnnHandWrittenPaga extends Component {
     super(props);
     this.state = {
       sequentialTrainStatus: { epochs: 0, currentEpoch: 0, loss: 0, running: false },
-      amountImages: 50,
+      loadRunning: false,
+      amountTraining: 50,
       dataTraining: { images: [], labels: [] },
       page: 0,
       rowsPerPage: 25
@@ -129,15 +134,15 @@ class CnnHandWrittenPaga extends Component {
     return this.trainedModel.predict(tf.tensor4d(imagesXs, imagesShape));
   }
 
-  getDataTrainingCurrenPage(){
+  getDataTrainingCurrenPage() {
     const { rowsPerPage, page } = this.state;
     const { images, labels, labelsPredicted } = this.state.dataTraining;
-    const [ rowInit, rowEnd ] = [page * rowsPerPage, page * rowsPerPage + rowsPerPage];
+    const [rowInit, rowEnd] = [page * rowsPerPage, page * rowsPerPage + rowsPerPage];
     return {
       images: images.slice(rowInit, rowEnd),
       labels: labels.slice(rowInit, rowEnd),
-      labelsPredicted: labelsPredicted != null?labelsPredicted.slice(rowInit, rowEnd): null,
-     }
+      labelsPredicted: labelsPredicted != null ? labelsPredicted.slice(rowInit, rowEnd) : null,
+    }
   }
 
   getPredictLabel(labelsPredicted, index) {
@@ -172,23 +177,18 @@ class CnnHandWrittenPaga extends Component {
     ctx.putImageData(imageData, 0, 0);
   }
 
-  onSubmitXY = (event) => {
+  onSubmitAmountTraining = (event) => {
     event.preventDefault();
-    /*
     const formData = new FormData(event.target);
-    const x = formData.get('x');
-    const yReal = formData.get('y');
-    const yPredic = this.getPredict(x);
-    let polynomialTrainData = this.state.polynomialTrainData;
-    polynomialTrainData.push({ x, yReal, yPredic });
-    this.setpolynomialTrainData(polynomialTrainData);
-    */
+    const amountTraining = formData.get('amountTraining');
+    this.setState({ amountTraining });
+    this.loadExamples();
   };
 
   onSubmitDoTrain = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const {amountImages} = this.state;
+    const { amountImages } = this.state;
     const trainProps = {
       epochs: formData.get('epochs'),
       data: { amountImages },
@@ -206,7 +206,7 @@ class CnnHandWrittenPaga extends Component {
 
   render() {
     const { classes } = this.props;
-    const { rowsPerPage, page } = this.state;
+    const { amountTraining, rowsPerPage, page } = this.state;
     const { labels, labelsPredicted } = this.getDataTrainingCurrenPage();
     const amountImages = this.state.dataTraining.labels.length;
     return (
@@ -214,11 +214,15 @@ class CnnHandWrittenPaga extends Component {
         <Grid container spacing={8}>
           <Grid item xs={12} sm={4}>
             {
-              (this.state.sequentialTrainStatus.running)
+              (this.state.sequentialTrainStatus.running || this.state.loadRunning)
                 ? <div className={classes.progressRoot}>
                   <CircularProgress className={classes.progress} />
                 </div>
-                : <InputExamples onSubmitXY={this.onSubmitXY} onSubmitDoTrain={this.onSubmitDoTrain} />
+                : <InputExamples
+                  onSubmitAmountTraining={this.onSubmitAmountTraining}
+                  onSubmitDoTrain={this.onSubmitDoTrain}
+                  defaultAmountTraining={amountTraining}
+                />
             }
           </Grid>
           <Grid item container direction="column" xs={12} sm={8}>

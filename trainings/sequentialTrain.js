@@ -53,6 +53,5 @@ exports.doTrain = function(trainProps, socketIo){
 }
 
 exports.getTrainFile = function (train, file) {
-    console.log(train, file);
     return `${config.trainingsPath()}/${train}/${file}`
 }

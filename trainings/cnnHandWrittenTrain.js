@@ -16,7 +16,7 @@ exports.getExamplesTrain = async function (amount) {
 
 exports.getLabelTrain = async function (image) {
     const modelLoaded = await tf.loadModel(`file://${config.trainingsPath()}/model-3/model.json`);
-    const imagesShape = [1, 28, 28, 1];
+    const imagesShape = [1, IMAGE_HEIGHT, IMAGE_WIDTH, 1];
     const imagesXs = new Float32Array(tf.util.sizeFromShape(imagesShape));
     imagesXs.set(image, 0);
     const input = tf.tensor4d(imagesXs, imagesShape);
@@ -47,7 +47,7 @@ exports.doTrain = function (trainProps, socketIo) {
                 process.stdout.write('\033[0G');
                 //process.stdout.write(`Epoch: ${epoch} log: ${log.loss} \n`);
                 //console.log(`Epoch ${epoch}: loss = ${log.loss}`);
-                if (countEmits == 10) {
+                if (countEmits == 1) {
                     epochLog = { epochs: trainProps.epochs, currentEpoch: epoch, loss: log.loss, running: true };
                     socketIo.emit('sequentialTrain', epochLog);
                     countEmits = 0;
